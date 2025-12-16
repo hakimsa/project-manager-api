@@ -2,6 +2,6 @@
 
 javaPipeline(
   buildType: 'node',
-  env: 'dev',
+  env: 'prod',
   runTests: false
 )
