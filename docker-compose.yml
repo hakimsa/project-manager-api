@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: project_manager_mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - '27017:27017'
+
+  api:
+    build: .
+    container_name: project_manager_api
+    restart: unless-stopped
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/project_manager
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
