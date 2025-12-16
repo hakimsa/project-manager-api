@@ -2,6 +2,7 @@
 
 javaPipeline(
   buildType: 'node',
-  env: 'prod',
-  runTests: false
+  buildCmd: 'npm ci && npm run build',
+  env: 'dev'
 )
+
