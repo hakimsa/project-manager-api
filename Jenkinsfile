@@ -3,20 +3,20 @@
 pipeline {
     agent any
 
-    environment {
-        // GitHub credentials ID configurada en Jenkins
+       environment {
+        // Solo se referencia el ID, nunca el token
         GIT_CREDENTIALS = 'github-token-id'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout con credenciales para permitir status updates
-                checkout([$class: 'GitSCM',
+                checkout([
+                    $class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/tu_usuario/tu_repo_node.git',
-                        credentialsId: "${GIT_CREDENTIALS}"
+                        url: 'https://github.com/hakimsa/project-manager-api.git',
+                        credentialsId: "${env.GIT_CREDENTIALS}"
                     ]]
                 ])
             }
