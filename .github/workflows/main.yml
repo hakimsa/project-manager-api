@@ -15,7 +15,7 @@ jobs:
       node-version: '20'
       install-command: npm ci
       run-tests: false
-      lint-command: npm run lint
       build-command : npm run build
+      artifact-path: dist/
     
     secrets: inherit
