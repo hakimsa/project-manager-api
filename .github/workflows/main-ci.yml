@@ -1,21 +1,48 @@
-# ── Node.js ───────────────────────────────────────────────────
-name: Pipeline Node.js
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
+
   ci:
     uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
     with:
       setup-node: true
       node-version: '20'
       install-command: npm ci
-      run-tests: false
-      build-command : npm run build
+      test-command: npm test -- --coverage
+      build-command: npm run build
       artifact-path: dist/
-    
+    secrets: inherit
+
+  deploy-staging:
+    needs: ci
+    if: github.ref == 'refs/heads/develop'
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
+    with:
+      environment: staging
+      deploy-tool: helm
+      image-name: hakimsamouh/backend-app
+      image-tag: ${{ github.sha }}
+      helm-release-name: backend-app-staging
+      helm-namespace: staging
+      helm-values-file: ./values.yaml        # ← ruta dentro de helm-releases
+      artifact-name: ${{ needs.ci.outputs.artifact-name }}
+    secrets: inherit
+
+  deploy-production:
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
+    with:
+      environment: production
+      deploy-tool: helm
+      image-name: hakimsamouh/backend-app
+      image-tag: ${{ github.sha }}
+      helm-release-name: backend-app
+      helm-namespace: production
+      helm-values-file: production/values.yaml     # ← ruta dentro de helm-releases
+      artifact-name: ${{ needs.ci.outputs.artifact-name }}
     secrets: inherit
