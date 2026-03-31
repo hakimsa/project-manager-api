@@ -1,0 +1,17 @@
+# ── Node.js ───────────────────────────────────────────────────
+name: Pipeline Node.js
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
+    with:
+      node-version: '20'
+      run-tests: true
+    
+    secrets: inherit
