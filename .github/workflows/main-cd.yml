@@ -37,7 +37,7 @@ jobs:
   deploy-production:
     needs: ci
     if: github.ref == 'refs/heads/main'
-    uses: hakimsa/shared-workflows/.github/workflows/reusable-deploy.yml@main
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       environment: production          # ← requiere aprobacion manual en GitHub
       deploy-tool: helm
