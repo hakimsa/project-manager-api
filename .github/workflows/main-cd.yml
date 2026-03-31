@@ -1,0 +1,50 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+
+jobs:
+
+  ci:
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
+    with:
+      setup-node: true
+      node-version: '20'
+      install-command: npm ci
+      test-command: npm test -- --coverage
+      build-command: npm run build
+      artifact-path: dist/
+    secrets: inherit
+
+  # ── Deploy a Staging (rama develop) ───────────────────────
+  deploy-staging:
+    needs: ci
+    if: github.ref == 'refs/heads/develop'
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
+    with:
+      environment: staging
+      deploy-tool: helm
+      image-name: ghcr.io/hakimsa/mi-app
+      image-tag: ${{ github.sha }}
+      helm-release-name: mi-app-staging
+      helm-namespace: staging
+      helm-values-file: ./helm/values-staging.yaml
+      artifact-name: ${{ needs.ci.outputs.artifact-name }}
+    secrets: inherit
+
+  # ── Deploy a Production (rama main) ───────────────────────
+  deploy-production:
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-deploy.yml@main
+    with:
+      environment: production          # ← requiere aprobacion manual en GitHub
+      deploy-tool: helm
+      image-name: ghcr.io/hakimsa/mi-app
+      image-tag: ${{ github.sha }}
+      helm-release-name: mi-app
+      helm-namespace: production
+      helm-values-file: ./helm/values-production.yaml
+      artifact-name: ${{ needs.ci.outputs.artifact-name }}
+    secrets: inherit
