@@ -25,9 +25,9 @@ jobs:
     with:
       environment: staging
       deploy-tool: helm
-      image-name: ghcr.io/hakimsa/mi-app
+      image-name: hakimsamouh/backend-app
       image-tag: ${{ github.sha }}
-      helm-release-name: mi-app-staging
+      helm-release-name: backend-app-staging
       helm-namespace: staging
       helm-values-file: ./helm/values-staging.yaml
       artifact-name: ${{ needs.ci.outputs.artifact-name }}
@@ -41,7 +41,7 @@ jobs:
     with:
       environment: production          # ← requiere aprobacion manual en GitHub
       deploy-tool: helm
-      image-name: ghcr.io/hakimsa/mi-app
+      image-name: hakimsamouh/backend-app
       image-tag: ${{ github.sha }}
       helm-release-name: mi-app
       helm-namespace: production
